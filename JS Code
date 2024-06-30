@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Smart Contract Interaction</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.5/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>Smart Contract Interaction</h1>
+    <div>
+        <label for="setValueInput">Set Value:</label>
+        <input type="number" id="setValueInput">
+        <button onclick="setValue()">Set Value</button>
+    </div>
+    <div>
+        <button onclick="incrementValue()">Increment Value</button>
+    </div>
+    <div>
+        <button onclick="decrementValue()">Decrement Value</button>
+    </div>
+    <div>
+        <button onclick="comparableValue()">Comparable Value</button>
+    </div>
+    <div>
+        <button onclick="getValue()">Get Value</button>
+        <p>Value: <span id="valueDisplay"></span></p>
+    </div>
+
+    <script>
+        const contractAddress = '0xDA07165D4f7c84EEEfa7a4Ff439e039B7925d3dF';
+        const contractABI = [
+            {
+                "inputs": [],
+                "name": "getValue",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setValue",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "incrementValue",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        let web3;
+        let contract;
+
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                await window.ethereum.enable();
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+            } else {
+                console.error('Please install MetaMask!');
+            }
+        });
+
+        async function setValue() {
+            const value = document.getElementById('setValueInput').value;
+            const accounts = await web3.eth.getAccounts();
+            await contract.methods.setValue(value).send({ from: accounts[0] });
+        }
+
+        async function incrementValue() {
+            const accounts = await web3.eth.getAccounts();
+            await contract.methods.incrementValue().send({ from: accounts[0] });
+        }
+
+        async function decrementValue() {
+            const accounts = await web3.eth.getAccounts();
+            await contract.methods.decrementValue().send({ from: accounts[0] });
+        }
+        async function comparableValue() {
+            const accounts = await web3.eth.getAccounts();
+            await contract.methods.comparableValue().send({ from: accounts[0] });
+        }
+
+        async function getValue() {
+            const value = await contract.methods.getValue().call();
+            document.getElementById('valueDisplay').innerText = value;
+        }
+    </script>
+</body>
+</html>
